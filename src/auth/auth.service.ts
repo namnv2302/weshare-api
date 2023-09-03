@@ -1,4 +1,7 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { Response } from 'express';
+import ms from 'ms';
 import { JwtService } from '@nestjs/jwt';
 import { UsersService } from '@users/users.service';
 
@@ -7,6 +10,7 @@ export class AuthService {
   constructor(
     private usersService: UsersService,
     private jwtService: JwtService,
+    private configService: ConfigService,
   ) {}
 
   async validateUser(username: string, pass: string): Promise<any> {
@@ -23,10 +27,75 @@ export class AuthService {
     return null;
   }
 
-  async login(user: any) {
-    const payload = { id: user.id, email: user.email };
+  async login(user: any, response: Response) {
+    const payload = {
+      sub: 'token login',
+      iss: 'from server',
+      id: user.id,
+      email: user.email,
+    };
+
+    const refreshToken = this.createRefreshToken(payload);
+    await this.usersService.updateRefreshToken(user.id, refreshToken);
+
+    // Set refresh token with cookie
+    response.cookie('refresh_token', refreshToken, {
+      httpOnly: true,
+      maxAge: ms(this.configService.get<string>('JWT_REFRESH_EXPIRE')),
+    });
+
     return {
       access_token: this.jwtService.sign(payload),
     };
+  }
+
+  createRefreshToken(payload) {
+    const refresh_token = this.jwtService.sign(payload, {
+      secret: this.configService.get<string>('JWT_REFRESH_TOKEN_SECRET'),
+      expiresIn:
+        ms(this.configService.get<string>('JWT_REFRESH_EXPIRE')) / 1000,
+    });
+    return refresh_token;
+  }
+
+  async refreshToken(refreshToken: string, response: Response) {
+    try {
+      this.jwtService.verify(refreshToken, {
+        secret: this.configService.get<string>('JWT_REFRESH_TOKEN_SECRET'),
+      });
+      const user = await this.usersService.findUserByRefreshToken(refreshToken);
+      if (user) {
+        const payload = {
+          sub: 'token refresh',
+          iss: 'from server',
+          id: user.id,
+          email: user.email,
+        };
+        const refreshToken = this.createRefreshToken(payload);
+        await this.usersService.updateRefreshToken(
+          user.id.toString(),
+          refreshToken,
+        );
+        response.clearCookie('refresh_token');
+        response.cookie('refresh_token', refreshToken, {
+          httpOnly: true,
+          maxAge: ms(this.configService.get<string>('JWT_REFRESH_EXPIRE')),
+        });
+
+        return {
+          access_token: this.jwtService.sign(payload),
+        };
+      } else {
+        throw new BadRequestException('Refresh token invalid. Login again!');
+      }
+    } catch (error) {
+      throw new BadRequestException('Refresh token invalid. Login again!');
+    }
+  }
+
+  async logout(user: any, response: Response) {
+    await this.usersService.updateRefreshToken(user.id, '');
+    response.clearCookie('refresh_token');
+    return 'OK';
   }
 }

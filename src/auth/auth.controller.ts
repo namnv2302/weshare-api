@@ -1,7 +1,9 @@
-import { Controller, Get, Post, Request, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Req, Res, UseGuards } from '@nestjs/common';
 import { LocalAuthGuard } from '@auth/local-auth.guard';
 import { AuthService } from '@auth/auth.service';
-import { Public } from '@/decorator/customize';
+import { Public, ResponseMessage } from '@/decorator/customize';
+import { User } from '@/decorator/user.decorator';
+import { Request, Response } from 'express';
 
 @Controller('auth')
 export class AuthController {
@@ -9,13 +11,30 @@ export class AuthController {
 
   @Public()
   @UseGuards(LocalAuthGuard)
+  @ResponseMessage('User login')
   @Post('login')
-  login(@Request() req) {
-    return this.authService.login(req.user);
+  login(@Req() req, @Res({ passthrough: true }) response: Response) {
+    return this.authService.login(req.user, response);
   }
 
   @Get('me')
-  getMe(@Request() req) {
-    return req.user;
+  getMe(@User() user: any) {
+    return user;
+  }
+
+  @Public()
+  @Get('refresh')
+  refreshToken(
+    @Req() request: Request,
+    @Res({ passthrough: true }) response: Response,
+  ) {
+    const refreshToken = request.cookies['refresh_token'];
+    return this.authService.refreshToken(refreshToken, response);
+  }
+
+  @Get('logout')
+  @ResponseMessage('Logout user')
+  logout(@User() user: any, @Res({ passthrough: true }) response: Response) {
+    return this.authService.logout(user, response);
   }
 }

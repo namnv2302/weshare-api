@@ -52,8 +52,18 @@ export class UsersService {
     return this.usersRepository.findOneBy({ email: username });
   }
 
+  async findUserByRefreshToken(refreshToken: string) {
+    return await this.usersRepository.findOneBy({ refreshToken });
+  }
+
   update(id: number, updateUserDto: UpdateUserDto) {
     return `This action updates a #${id} user`;
+  }
+
+  async updateRefreshToken(id: string, refreshToken: string) {
+    return await this.usersRepository.update(id, {
+      refreshToken,
+    });
   }
 
   remove(id: number) {
