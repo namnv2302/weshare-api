@@ -1,9 +1,18 @@
-import { Controller, Get, Post, Req, Res, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Post,
+  Req,
+  Res,
+  UseGuards,
+} from '@nestjs/common';
 import { LocalAuthGuard } from '@auth/local-auth.guard';
 import { AuthService } from '@auth/auth.service';
 import { Public, ResponseMessage } from '@/decorator/customize';
 import { User } from '@/decorator/user.decorator';
 import { Request, Response } from 'express';
+import { RegisterData } from '@users/dto/create-user.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -19,7 +28,14 @@ export class AuthController {
 
   @Get('me')
   getMe(@User() user: any) {
-    return user;
+    return this.authService.getMe(user.id);
+  }
+
+  @Public()
+  @ResponseMessage('Register a new account')
+  @Post('register')
+  register(@Body() registerData: RegisterData) {
+    return this.authService.register(registerData);
   }
 
   @Public()

@@ -2,8 +2,8 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { compareSync, genSaltSync, hashSync } from 'bcryptjs';
-import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
+import { CreateUserDto, RegisterData } from '@users/dto/create-user.dto';
+import { UpdateUserDto } from '@users/dto/update-user.dto';
 import { User } from '@users/entities/user.entity';
 
 @Injectable()
@@ -40,6 +40,23 @@ export class UsersService {
     }
   }
 
+  async register(registerData: RegisterData) {
+    const isExist = await this.usersRepository.findOneBy({
+      email: registerData.email,
+    });
+    if (isExist) {
+      throw new BadRequestException('Email already exist!');
+    }
+    try {
+      return await this.usersRepository.save({
+        ...registerData,
+        password: this.getHashPassword(registerData.password),
+      });
+    } catch (error) {
+      throw new BadRequestException('Server failure! Try again');
+    }
+  }
+
   findAll() {
     return `This action returns all users`;
   }
@@ -50,6 +67,10 @@ export class UsersService {
 
   findOneByUsername(username: string) {
     return this.usersRepository.findOneBy({ email: username });
+  }
+
+  getUserInfoById(id: number) {
+    return this.usersRepository.findOneBy({ id });
   }
 
   async findUserByRefreshToken(refreshToken: string) {

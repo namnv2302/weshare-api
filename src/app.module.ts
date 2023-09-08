@@ -5,7 +5,9 @@ import { AppController } from '@/app.controller';
 import { AppService } from '@/app.service';
 import { UsersModule } from '@users/users.module';
 import { User } from '@users/entities/user.entity';
+import { Post } from '@/posts/entities/post.entity';
 import { AuthModule } from '@auth/auth.module';
+import { PostsModule } from './posts/posts.module';
 
 @Module({
   imports: [
@@ -18,7 +20,7 @@ import { AuthModule } from '@auth/auth.module';
         username: configService.get<string>('DB_USERNAME'),
         password: null,
         database: configService.get<string>('DB_NAME'),
-        entities: [User],
+        entities: [User, Post],
         synchronize: true,
       }),
       inject: [ConfigService],
@@ -28,6 +30,7 @@ import { AuthModule } from '@auth/auth.module';
     }),
     UsersModule,
     AuthModule,
+    PostsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

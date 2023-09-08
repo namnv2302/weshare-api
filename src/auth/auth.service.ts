@@ -4,6 +4,7 @@ import { Response } from 'express';
 import ms from 'ms';
 import { JwtService } from '@nestjs/jwt';
 import { UsersService } from '@users/users.service';
+import { RegisterData } from '@users/dto/create-user.dto';
 
 @Injectable()
 export class AuthService {
@@ -47,6 +48,19 @@ export class AuthService {
     return {
       access_token: this.jwtService.sign(payload),
     };
+  }
+
+  getMe(id: number) {
+    if (id) {
+      return this.usersService.getUserInfoById(id);
+    }
+  }
+
+  register(registerData: RegisterData) {
+    const newUser = this.usersService.register(registerData);
+    if (newUser) {
+      return 'OK';
+    }
   }
 
   createRefreshToken(payload) {
@@ -94,7 +108,7 @@ export class AuthService {
   }
 
   async logout(user: any, response: Response) {
-    await this.usersService.updateRefreshToken(user.id, '');
+    await this.usersService.updateRefreshToken(user.id, null);
     response.clearCookie('refresh_token');
     return 'OK';
   }

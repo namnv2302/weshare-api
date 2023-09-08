@@ -1,9 +1,13 @@
+import { Post } from '@/posts/entities/post.entity';
 import {
   Entity,
   Column,
   PrimaryGeneratedColumn,
   CreateDateColumn,
   UpdateDateColumn,
+  OneToMany,
+  ManyToMany,
+  JoinTable,
 } from 'typeorm';
 
 @Entity({ name: 'users' })
@@ -34,6 +38,13 @@ export class User {
 
   @Column({ type: 'enum', enum: ['admin', 'user'], default: 'user' })
   role: string;
+
+  @OneToMany(() => Post, (post) => post.user)
+  posts: Post[];
+
+  @ManyToMany(() => Post)
+  @JoinTable()
+  liked: Post[];
 
   @Column({ default: true })
   isActive: boolean;

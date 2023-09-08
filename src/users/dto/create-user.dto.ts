@@ -11,3 +11,5 @@ export class CreateUserDto {
   @IsNotEmpty()
   password: string;
 }
+
+export class RegisterData extends CreateUserDto {}
