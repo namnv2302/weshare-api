@@ -6,8 +6,6 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   OneToMany,
-  ManyToMany,
-  JoinTable,
 } from 'typeorm';
 
 @Entity({ name: 'users' })
@@ -23,6 +21,9 @@ export class User {
 
   @Column()
   password: string;
+
+  @Column()
+  slug: string;
 
   @Column({ nullable: true })
   age: number;
@@ -41,10 +42,6 @@ export class User {
 
   @OneToMany(() => Post, (post) => post.user)
   posts: Post[];
-
-  @ManyToMany(() => Post)
-  @JoinTable()
-  liked: Post[];
 
   @Column({ default: true })
   isActive: boolean;

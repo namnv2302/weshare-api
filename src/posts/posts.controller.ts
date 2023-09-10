@@ -26,8 +26,14 @@ export class PostsController {
 
   @Get()
   @ResponseMessage('Find all post list')
-  findAll(@User() user: IUser) {
-    return this.postsService.findAll(user);
+  findAll() {
+    return this.postsService.findAll();
+  }
+
+  @Get('/me')
+  @ResponseMessage('Find all post list of me')
+  findAllOfMe(@User() user: IUser) {
+    return this.postsService.findAllOfMe(user);
   }
 
   @Get(':id')
@@ -38,6 +44,11 @@ export class PostsController {
   @Get(':id/like')
   like(@Param('id') id: string, @User() user: IUser) {
     return this.postsService.like(+id, user);
+  }
+
+  @Get(':id/unlike')
+  unlike(@Param('id') id: string, @User() user: IUser) {
+    return this.postsService.unlike(+id, user);
   }
 
   @Patch(':id')

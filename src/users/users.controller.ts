@@ -30,6 +30,11 @@ export class UsersController {
     return this.usersService.findOne(+id);
   }
 
+  @Get(':slug/profile')
+  findOneUserBySlug(@Param('slug') slug: string) {
+    return this.usersService.findOneUserBySlug(slug);
+  }
+
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
     return this.usersService.update(+id, updateUserDto);

@@ -25,10 +25,19 @@ export class PostsService {
     }
   }
 
-  async findAll(user: IUser) {
+  async findAll() {
+    return await this.postsRepository.find({
+      // where: { user: { id: user.id } },
+      order: { createdAt: 'DESC' },
+      relations: ['user', 'liked'],
+    });
+  }
+
+  async findAllOfMe(user: IUser) {
     return await this.postsRepository.find({
       where: { user: { id: user.id } },
-      relations: ['user'],
+      order: { createdAt: 'DESC' },
+      relations: ['user', 'liked'],
     });
   }
 
@@ -36,7 +45,7 @@ export class PostsService {
     try {
       return await this.postsRepository.findOne({
         where: { id: id },
-        relations: ['user'],
+        relations: ['user', 'liked'],
       });
     } catch (error) {
       throw new BadRequestException('Server failure! Try again');
@@ -44,11 +53,29 @@ export class PostsService {
   }
 
   async like(id: number, user: IUser) {
-    try {
-      const postFound = await this.postsRepository.findOneBy({ id });
-    } catch (error) {
-      throw new BadRequestException('Server failure! Try again');
-    }
+    // try {
+    const postFound = await this.postsRepository.findOne({
+      where: { id: id },
+      relations: ['liked'],
+    });
+    postFound.addUserLiked(user);
+    return await this.postsRepository.save(postFound);
+    // } catch (error) {
+    //   throw new BadRequestException('Server failure! Try again');
+    // }
+  }
+
+  async unlike(id: number, user: IUser) {
+    // try {
+    const postFound = await this.postsRepository.findOne({
+      where: { id: id },
+      relations: ['liked'],
+    });
+    postFound.liked = postFound.liked.filter((item) => item.id !== user.id);
+    return await this.postsRepository.save(postFound);
+    // } catch (error) {
+    //   throw new BadRequestException('Server failure! Try again');
+    // }
   }
 
   update(id: number, updatePostDto: UpdatePostDto) {

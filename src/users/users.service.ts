@@ -1,6 +1,7 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import slug from 'slug';
 import { compareSync, genSaltSync, hashSync } from 'bcryptjs';
 import { CreateUserDto, RegisterData } from '@users/dto/create-user.dto';
 import { UpdateUserDto } from '@users/dto/update-user.dto';
@@ -33,6 +34,7 @@ export class UsersService {
     try {
       return await this.usersRepository.save({
         ...createUserDto,
+        slug: slug(createUserDto.name, '_'),
         password: this.getHashPassword(createUserDto.password),
       });
     } catch (error) {
@@ -50,6 +52,7 @@ export class UsersService {
     try {
       return await this.usersRepository.save({
         ...registerData,
+        slug: slug(registerData.name, '_'),
         password: this.getHashPassword(registerData.password),
       });
     } catch (error) {
@@ -65,12 +68,24 @@ export class UsersService {
     return `This action returns a #${id} user`;
   }
 
+  findOneUserBySlug(slug: string) {
+    return this.usersRepository.findOne({
+      where: { slug: slug },
+      order: { posts: { createdAt: 'DESC' } },
+      relations: ['posts.user', 'posts.liked'],
+    });
+  }
+
   findOneByUsername(username: string) {
     return this.usersRepository.findOneBy({ email: username });
   }
 
   getUserInfoById(id: number) {
-    return this.usersRepository.findOneBy({ id });
+    return this.usersRepository.findOne({
+      where: { id: id },
+      order: { posts: { createdAt: 'DESC' } },
+      relations: ['posts.user', 'posts.liked'],
+    });
   }
 
   async findUserByRefreshToken(refreshToken: string) {
