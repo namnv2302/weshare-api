@@ -3,7 +3,11 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import slug from 'slug';
 import { compareSync, genSaltSync, hashSync } from 'bcryptjs';
-import { CreateUserDto, RegisterData } from '@users/dto/create-user.dto';
+import {
+  CreateUserDto,
+  CreateUserFromGoogleDto,
+  RegisterData,
+} from '@users/dto/create-user.dto';
 import { UpdateUserDto } from '@users/dto/update-user.dto';
 import { User } from '@users/entities/user.entity';
 
@@ -60,11 +64,29 @@ export class UsersService {
     }
   }
 
+  async createUserFromGoogle(createUserDto: CreateUserFromGoogleDto) {
+    const isExist = await this.usersRepository.findOneBy({
+      email: createUserDto.email,
+    });
+    if (isExist) {
+      return isExist;
+    }
+    try {
+      return await this.usersRepository.save({
+        ...createUserDto,
+        slug: slug(createUserDto.name, '_'),
+        password: this.getHashPassword(''),
+      });
+    } catch (error) {
+      throw new BadRequestException('Server failure! Try again');
+    }
+  }
+
   findAll() {
     return `This action returns all users`;
   }
 
-  findOne(id: number) {
+  findOne(id: string) {
     return `This action returns a #${id} user`;
   }
 
@@ -80,7 +102,7 @@ export class UsersService {
     return this.usersRepository.findOneBy({ email: username });
   }
 
-  getUserInfoById(id: number) {
+  getUserInfoById(id: string) {
     return this.usersRepository.findOne({
       where: { id: id },
       order: { posts: { createdAt: 'DESC' } },

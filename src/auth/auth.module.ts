@@ -8,11 +8,12 @@ import { UsersModule } from '@users/users.module';
 import { LocalStrategy } from '@auth/passport/local.strategy';
 import { JwtStrategy } from '@auth/passport/jwt.strategy';
 import ms from 'ms';
+import { GoogleStrategy } from '@auth/passport/google.strategy';
 
 @Module({
   imports: [
     UsersModule,
-    PassportModule,
+    PassportModule.register({ session: false }),
     JwtModule.registerAsync({
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => ({
@@ -25,6 +26,6 @@ import ms from 'ms';
     }),
   ],
   controllers: [AuthController],
-  providers: [AuthService, LocalStrategy, JwtStrategy],
+  providers: [AuthService, LocalStrategy, JwtStrategy, GoogleStrategy],
 })
 export class AuthModule {}

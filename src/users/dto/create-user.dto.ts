@@ -12,4 +12,13 @@ export class CreateUserDto {
   password: string;
 }
 
+export class CreateUserFromGoogleDto {
+  @IsNotEmpty()
+  name: string;
+
+  @IsNotEmpty()
+  @IsEmail()
+  email: string;
+}
+
 export class RegisterData extends CreateUserDto {}

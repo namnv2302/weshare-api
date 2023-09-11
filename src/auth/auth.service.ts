@@ -50,7 +50,14 @@ export class AuthService {
     };
   }
 
-  getMe(id: number) {
+  async handleGoogleLogin(user: any, response: Response) {
+    const result = await this.usersService.createUserFromGoogle(user);
+    if (result) {
+      return await this.login(user, response);
+    }
+  }
+
+  getMe(id: string) {
     if (id) {
       return this.usersService.getUserInfoById(id);
     }
@@ -86,10 +93,7 @@ export class AuthService {
           email: user.email,
         };
         const refreshToken = this.createRefreshToken(payload);
-        await this.usersService.updateRefreshToken(
-          user.id.toString(),
-          refreshToken,
-        );
+        await this.usersService.updateRefreshToken(user.id, refreshToken);
         response.clearCookie('refresh_token');
         response.cookie('refresh_token', refreshToken, {
           httpOnly: true,

@@ -13,8 +13,8 @@ import { IUser } from '@users/users.interface';
 
 @Entity({ name: 'posts' })
 export class Post {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
   @Column({ nullable: true })
   status: string;

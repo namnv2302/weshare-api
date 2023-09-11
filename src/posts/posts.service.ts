@@ -41,7 +41,7 @@ export class PostsService {
     });
   }
 
-  async findOne(id: number) {
+  async findOne(id: string) {
     try {
       return await this.postsRepository.findOne({
         where: { id: id },
@@ -52,7 +52,7 @@ export class PostsService {
     }
   }
 
-  async like(id: number, user: IUser) {
+  async like(id: string, user: IUser) {
     // try {
     const postFound = await this.postsRepository.findOne({
       where: { id: id },
@@ -65,7 +65,7 @@ export class PostsService {
     // }
   }
 
-  async unlike(id: number, user: IUser) {
+  async unlike(id: string, user: IUser) {
     // try {
     const postFound = await this.postsRepository.findOne({
       where: { id: id },

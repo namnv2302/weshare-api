@@ -38,17 +38,17 @@ export class PostsController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.postsService.findOne(+id);
+    return this.postsService.findOne(id);
   }
 
   @Get(':id/like')
   like(@Param('id') id: string, @User() user: IUser) {
-    return this.postsService.like(+id, user);
+    return this.postsService.like(id, user);
   }
 
   @Get(':id/unlike')
   unlike(@Param('id') id: string, @User() user: IUser) {
-    return this.postsService.unlike(+id, user);
+    return this.postsService.unlike(id, user);
   }
 
   @Patch(':id')
