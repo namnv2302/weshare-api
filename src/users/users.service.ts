@@ -114,8 +114,30 @@ export class UsersService {
     return await this.usersRepository.findOneBy({ refreshToken });
   }
 
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
+  async update(id: string, updateUserDto: UpdateUserDto) {
+    try {
+      const user = await this.usersRepository.findOneBy({ id: id });
+      if (user) {
+        return await this.usersRepository.save({ ...user, ...updateUserDto });
+      } else {
+        throw new BadRequestException('User not exist! Try again');
+      }
+    } catch (error) {
+      throw new BadRequestException('Server failure! Try again');
+    }
+  }
+
+  async updateAvatar(id: string, avatar: string) {
+    try {
+      const user = await this.usersRepository.findOneBy({ id: id });
+      if (user) {
+        return await this.usersRepository.save({ ...user, avatar });
+      } else {
+        throw new BadRequestException('User not exist! Try again');
+      }
+    } catch (error) {
+      throw new BadRequestException('Server failure! Try again');
+    }
   }
 
   async updateRefreshToken(id: string, refreshToken: string) {

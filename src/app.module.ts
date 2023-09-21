@@ -7,7 +7,8 @@ import { UsersModule } from '@users/users.module';
 import { User } from '@users/entities/user.entity';
 import { Post } from '@/posts/entities/post.entity';
 import { AuthModule } from '@auth/auth.module';
-import { PostsModule } from './posts/posts.module';
+import { PostsModule } from '@/posts/posts.module';
+import { GatewayModule } from '@/gateway/gateway.module';
 
 @Module({
   imports: [
@@ -31,6 +32,7 @@ import { PostsModule } from './posts/posts.module';
     UsersModule,
     AuthModule,
     PostsModule,
+    GatewayModule,
   ],
   controllers: [AppController],
   providers: [AppService],

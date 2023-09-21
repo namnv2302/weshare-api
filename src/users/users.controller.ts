@@ -37,7 +37,12 @@ export class UsersController {
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.usersService.update(+id, updateUserDto);
+    return this.usersService.update(id, updateUserDto);
+  }
+
+  @Patch(':id/avatar')
+  updateAvatar(@Param('id') id: string, @Body('avatar') avatar: string) {
+    return this.usersService.updateAvatar(id, avatar);
   }
 
   @Delete(':id')
