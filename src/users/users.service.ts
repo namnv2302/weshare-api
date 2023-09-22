@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Like, Repository } from 'typeorm';
 import slug from 'slug';
 import { compareSync, genSaltSync, hashSync } from 'bcryptjs';
 import {
@@ -10,6 +10,7 @@ import {
 } from '@users/dto/create-user.dto';
 import { UpdateUserDto } from '@users/dto/update-user.dto';
 import { User } from '@users/entities/user.entity';
+import aqp from 'api-query-params';
 
 @Injectable()
 export class UsersService {
@@ -82,8 +83,15 @@ export class UsersService {
     }
   }
 
-  findAll() {
-    return `This action returns all users`;
+  async findAll(query: string) {
+    const { filter } = aqp(query);
+    if (filter.name) {
+      return await this.usersRepository.findBy({
+        name: Like(`%${filter.name}%`),
+      });
+    } else {
+      return await this.usersRepository.find();
+    }
   }
 
   findOne(id: string) {
