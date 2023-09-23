@@ -10,6 +10,8 @@ import {
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { User } from '@/decorator/user.decorator';
+import { IUser } from '@users/users.interface';
 
 @Controller('users')
 export class UsersController {
@@ -23,6 +25,11 @@ export class UsersController {
   @Get()
   findAll() {
     return this.usersService.findAll();
+  }
+
+  @Get('followed')
+  getFollowed(@User() user: IUser) {
+    return this.usersService.getFollowed(user);
   }
 
   @Get(':id')
@@ -48,5 +55,20 @@ export class UsersController {
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.usersService.remove(+id);
+  }
+
+  @Get(':id/follow')
+  follow(@Param('id') id: string, @User() user: IUser) {
+    return this.usersService.follow(id, user);
+  }
+
+  @Get(':id/unfollow')
+  unfollow(@Param('id') id: string, @User() user: IUser) {
+    return this.usersService.unfollow(id, user);
+  }
+
+  @Get(':id/addfr')
+  addfr(@Param('id') id: string, @User() user: IUser) {
+    return this.usersService.addfr(id, user);
   }
 }

@@ -50,7 +50,12 @@ export class AuthService {
     };
   }
 
-  async handleGoogleLogin(user: any, response: Response) {
+  async handleGoogleRedirect(response: Response) {
+    response.redirect('http://localhost:8080/api/auth/google/success');
+  }
+
+  async handleGoogleSuccess(user: any, response: Response) {
+    console.log(user);
     const result = await this.usersService.createUserFromGoogle(user);
     if (result) {
       return await this.login(user, response);

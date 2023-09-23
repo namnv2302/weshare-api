@@ -10,6 +10,7 @@ import {
 } from '@users/dto/create-user.dto';
 import { UpdateUserDto } from '@users/dto/update-user.dto';
 import { User } from '@users/entities/user.entity';
+import { IUser } from '@users/users.interface';
 
 @Injectable()
 export class UsersService {
@@ -94,7 +95,7 @@ export class UsersService {
     return this.usersRepository.findOne({
       where: { slug: slug },
       order: { posts: { createdAt: 'DESC' } },
-      relations: ['posts.user', 'posts.liked'],
+      relations: ['posts.user', 'posts.liked', 'following', 'followed'],
     });
   }
 
@@ -106,7 +107,13 @@ export class UsersService {
     return this.usersRepository.findOne({
       where: { id: id },
       order: { posts: { createdAt: 'DESC' } },
-      relations: ['posts.user', 'posts.liked'],
+      relations: [
+        'posts.user',
+        'posts.liked',
+        'following',
+        'followed',
+        'friends',
+      ],
     });
   }
 
@@ -148,5 +155,89 @@ export class UsersService {
 
   remove(id: number) {
     return `This action removes a #${id} user`;
+  }
+
+  async follow(id: string, user: IUser) {
+    try {
+      if (id === user.id) {
+        throw new BadRequestException('Failed');
+      }
+      const userFound = await this.usersRepository.findOneBy({ id: id });
+      const me = await this.usersRepository.findOneBy({ id: user.id });
+
+      userFound.addUserToFollowedList(me);
+      me.addUserToFollowingList(userFound);
+      await this.usersRepository.save(userFound);
+      await this.usersRepository.save(me);
+      return 'Ok';
+    } catch (error) {
+      throw new BadRequestException('Server failure! Try again');
+    }
+  }
+
+  async unfollow(id: string, user: IUser) {
+    try {
+      if (id === user.id) {
+        throw new BadRequestException('Failed');
+      }
+      const userFound = await this.usersRepository.findOne({
+        where: { id: id },
+        relations: ['followed', 'following'],
+      });
+      const me = await this.usersRepository.findOne({
+        where: { id: user.id },
+        relations: ['followed', 'following'],
+      });
+
+      userFound.followed = userFound.followed.filter(
+        (item) => item.id !== user.id,
+      );
+      me.following = me.following.filter((item) => item.id !== id);
+      await this.usersRepository.save(userFound);
+      await this.usersRepository.save(me);
+      return 'Ok';
+    } catch (error) {
+      throw new BadRequestException('Server failure! Try again');
+    }
+  }
+
+  async addfr(id: string, user: IUser) {
+    try {
+      if (id === user.id) {
+        throw new BadRequestException('Failed');
+      }
+      const userFound = await this.usersRepository.findOne({
+        where: { id: id },
+        relations: ['followed', 'following', 'friends'],
+      });
+      const me = await this.usersRepository.findOne({
+        where: { id: user.id },
+        relations: ['followed', 'following', 'friends'],
+      });
+
+      userFound.following = userFound.following.filter(
+        (item) => item.id !== user.id,
+      );
+      me.followed = me.following.filter((item) => item.id !== id);
+
+      userFound.addUserToFriendList(me);
+      me.addUserToFriendList(userFound);
+      await this.usersRepository.save(userFound);
+      await this.usersRepository.save(me);
+      return 'Ok';
+    } catch (error) {
+      throw new BadRequestException('Server failure! Try again');
+    }
+  }
+
+  async getFollowed(user: IUser) {
+    try {
+      return await this.usersRepository.findOne({
+        where: { id: user.id },
+        relations: ['followed'],
+      });
+    } catch (error) {
+      throw new BadRequestException('Server failure! Try again');
+    }
   }
 }

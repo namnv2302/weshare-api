@@ -6,6 +6,8 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   OneToMany,
+  ManyToMany,
+  JoinTable,
 } from 'typeorm';
 
 @Entity({ name: 'users' })
@@ -42,6 +44,39 @@ export class User {
 
   @OneToMany(() => Post, (post) => post.user)
   posts: Post[];
+
+  @ManyToMany(() => User)
+  @JoinTable()
+  followed: User[];
+
+  addUserToFollowedList(user: User) {
+    if (this.followed === undefined || this.followed === null) {
+      this.followed = new Array<User>();
+    }
+    this.followed.push(user);
+  }
+
+  @ManyToMany(() => User)
+  @JoinTable()
+  following: User[];
+
+  addUserToFollowingList(user: User) {
+    if (this.following === undefined || this.following === null) {
+      this.following = new Array<User>();
+    }
+    this.following.push(user);
+  }
+
+  @ManyToMany(() => User)
+  @JoinTable()
+  friends: User[];
+
+  addUserToFriendList(user: User) {
+    if (this.friends === undefined || this.friends === null) {
+      this.friends = new Array<User>();
+    }
+    this.friends.push(user);
+  }
 
   @Column({ default: true })
   isActive: boolean;
