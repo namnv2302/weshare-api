@@ -36,7 +36,7 @@ export class User {
   @Column({ nullable: true })
   gender: string;
 
-  @Column({ nullable: true })
+  @Column({ type: 'text', nullable: true })
   avatar: string;
 
   @Column({ type: 'enum', enum: ['admin', 'user'], default: 'user' })

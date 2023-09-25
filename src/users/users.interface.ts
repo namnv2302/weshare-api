@@ -6,7 +6,9 @@ export interface IUser {
   age: number;
   address: string;
   gender: string;
-  follows: IUser[];
+  following: IUser[];
+  followed: IUser[];
+  friends: IUser[];
   avatar: string;
   role: string;
 }

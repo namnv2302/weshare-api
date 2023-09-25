@@ -26,8 +26,8 @@ export class PostsController {
 
   @Get()
   @ResponseMessage('Find all post list')
-  findAll() {
-    return this.postsService.findAll();
+  findAll(@User() user: IUser) {
+    return this.postsService.findAll(user);
   }
 
   @Get('/me')

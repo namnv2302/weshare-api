@@ -1,16 +1,18 @@
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { Post } from '@/posts/entities/post.entity';
 import { IUser } from '@users/users.interface';
+import { UsersService } from '@users/users.service';
 
 @Injectable()
 export class PostsService {
   constructor(
     @InjectRepository(Post)
     private postsRepository: Repository<Post>,
+    private usersService: UsersService,
   ) {}
 
   async create(createPostDto: CreatePostDto, user: IUser) {
@@ -25,9 +27,11 @@ export class PostsService {
     }
   }
 
-  async findAll() {
+  async findAll(user: IUser) {
+    const itMe = await this.usersService.getUserInfoById(user.id);
+    const friendsId = itMe.friends ? itMe.friends.map((user) => user.id) : [];
     return await this.postsRepository.find({
-      // where: { user: { id: user.id } },
+      where: [{ user: { id: user.id } }, { user: { id: In(friendsId) } }],
       order: { createdAt: 'DESC' },
       relations: ['user', 'liked'],
     });
