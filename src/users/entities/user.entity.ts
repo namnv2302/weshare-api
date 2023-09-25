@@ -81,7 +81,7 @@ export class User {
   @Column({ default: true })
   isActive: boolean;
 
-  @Column({ nullable: true, length: 355 })
+  @Column({ type: 'text', nullable: true })
   refreshToken: string;
 
   @CreateDateColumn({ nullable: true })

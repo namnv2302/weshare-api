@@ -16,10 +16,10 @@ export class Post {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column({ nullable: true })
+  @Column({ type: 'longtext', nullable: true })
   status: string;
 
-  @Column({ nullable: true })
+  @Column({ type: 'text', nullable: true })
   postUrl: string;
 
   @ManyToOne(() => User, (user) => user.posts)

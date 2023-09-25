@@ -10,11 +10,8 @@ import {
 } from '@users/dto/create-user.dto';
 import { UpdateUserDto } from '@users/dto/update-user.dto';
 import { User } from '@users/entities/user.entity';
-<<<<<<< HEAD
 import { IUser } from '@users/users.interface';
-=======
 import aqp from 'api-query-params';
->>>>>>> ec8fef2d6f2ab6a6636cf7e3e219c00f8b00e995
 
 @Injectable()
 export class UsersService {
