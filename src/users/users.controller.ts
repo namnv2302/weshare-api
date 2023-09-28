@@ -24,8 +24,8 @@ export class UsersController {
   }
 
   @Get()
-  findAll(@Query() queryString: string) {
-    return this.usersService.findAll(queryString);
+  findAll(@Query() queryString: string, @User() user: IUser) {
+    return this.usersService.findAll(queryString, user);
   }
 
   @Get('followed')
@@ -51,6 +51,11 @@ export class UsersController {
   @Patch(':id/avatar')
   updateAvatar(@Param('id') id: string, @Body('avatar') avatar: string) {
     return this.usersService.updateAvatar(id, avatar);
+  }
+
+  @Patch(':id/cover')
+  updateCoverPhoto(@Param('id') id: string, @Body('cover') cover: string) {
+    return this.usersService.updateCoverPhoto(id, cover);
   }
 
   @Delete(':id')

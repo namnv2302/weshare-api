@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Like, Repository } from 'typeorm';
+import { Like, Not, Repository } from 'typeorm';
 import slug from 'slug';
 import { compareSync, genSaltSync, hashSync } from 'bcryptjs';
 import {
@@ -84,11 +84,14 @@ export class UsersService {
     }
   }
 
-  async findAll(query: string) {
+  async findAll(query: string, user: IUser) {
     const { filter } = aqp(query);
     if (filter.name) {
-      return await this.usersRepository.findBy({
-        name: Like(`%${filter.name}%`),
+      return await this.usersRepository.find({
+        where: {
+          id: Not(user.id),
+          name: Like(`%${filter.name}%`),
+        },
       });
     } else {
       return await this.usersRepository.find();
@@ -131,7 +134,17 @@ export class UsersService {
 
   async update(id: string, updateUserDto: UpdateUserDto) {
     try {
-      const user = await this.usersRepository.findOneBy({ id: id });
+      const user = await this.usersRepository.findOne({
+        where: { id: id },
+        order: { posts: { createdAt: 'DESC' } },
+        relations: [
+          'posts.user',
+          'posts.liked',
+          'following',
+          'followed',
+          'friends',
+        ],
+      });
       if (user) {
         return await this.usersRepository.save({ ...user, ...updateUserDto });
       } else {
@@ -147,6 +160,19 @@ export class UsersService {
       const user = await this.usersRepository.findOneBy({ id: id });
       if (user) {
         return await this.usersRepository.save({ ...user, avatar });
+      } else {
+        throw new BadRequestException('User not exist! Try again');
+      }
+    } catch (error) {
+      throw new BadRequestException('Server failure! Try again');
+    }
+  }
+
+  async updateCoverPhoto(id: string, cover: string) {
+    try {
+      const user = await this.usersRepository.findOneBy({ id: id });
+      if (user) {
+        return await this.usersRepository.save({ ...user, cover });
       } else {
         throw new BadRequestException('User not exist! Try again');
       }

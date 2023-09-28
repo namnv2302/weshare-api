@@ -34,10 +34,16 @@ export class User {
   address: string;
 
   @Column({ nullable: true })
+  bio: string;
+
+  @Column({ nullable: true })
   gender: string;
 
   @Column({ type: 'text', nullable: true })
   avatar: string;
+
+  @Column({ type: 'text', nullable: true })
+  cover: string;
 
   @Column({ type: 'enum', enum: ['admin', 'user'], default: 'user' })
   role: string;
