@@ -1,4 +1,5 @@
 import { Post } from '@/posts/entities/post.entity';
+import { Story } from '@/stories/entities/story.entity';
 import {
   Entity,
   Column,
@@ -50,6 +51,9 @@ export class User {
 
   @OneToMany(() => Post, (post) => post.user)
   posts: Post[];
+
+  @OneToMany(() => Story, (story) => story.owner)
+  stories: Story[];
 
   @ManyToMany(() => User)
   @JoinTable()
