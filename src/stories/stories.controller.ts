@@ -14,8 +14,8 @@ export class StoriesController {
   }
 
   @Get()
-  findAll() {
-    return this.storiesService.findAll();
+  findAll(@User() user: IUser) {
+    return this.storiesService.findAll(user);
   }
 
   @Get(':id')
