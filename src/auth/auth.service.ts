@@ -5,6 +5,7 @@ import ms from 'ms';
 import { JwtService } from '@nestjs/jwt';
 import { UsersService } from '@users/users.service';
 import { RegisterData } from '@users/dto/create-user.dto';
+import { IUser } from '@users/users.interface';
 
 @Injectable()
 export class AuthService {
@@ -50,16 +51,10 @@ export class AuthService {
     };
   }
 
-  async handleGoogleRedirect(response: Response) {
-    response.redirect('http://localhost:8080/api/auth/google/success');
-  }
-
-  async handleGoogleSuccess(user: any, response: Response) {
-    console.log(user);
-    const result = await this.usersService.createUserFromGoogle(user);
-    if (result) {
-      return await this.login(user, response);
-    }
+  async handleGoogleRedirect(user: any, response: Response) {
+    response.redirect(
+      `http://localhost:3000/sign-in?accessToken=${user.accessToken}&refreshToken=${user.refreshToken}&id=${user.id}`,
+    );
   }
 
   getMe(id: string) {

@@ -77,7 +77,6 @@ export class UsersService {
       return await this.usersRepository.save({
         ...createUserDto,
         slug: slug(createUserDto.name, '_'),
-        password: this.getHashPassword(''),
       });
     } catch (error) {
       throw new BadRequestException('Server failure! Try again');
