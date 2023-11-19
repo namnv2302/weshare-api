@@ -50,16 +50,11 @@ export class AuthService {
     };
   }
 
-  async handleGoogleRedirect(response: Response) {
-    response.redirect('http://localhost:8080/api/auth/google/success');
-  }
-
-  async handleGoogleSuccess(user: any, response: Response) {
-    console.log(user);
-    const result = await this.usersService.createUserFromGoogle(user);
-    if (result) {
-      return await this.login(user, response);
+  async handleGoogleRedirect(req: any, res: any) {
+    if (!req.user) {
+      return res.status(400).redirect('http://localhost:3000/login/failure');
     }
+    return res.status(200).redirect('http://localhost:3000/login/success');
   }
 
   getMe(id: string) {
@@ -69,10 +64,7 @@ export class AuthService {
   }
 
   register(registerData: RegisterData) {
-    const newUser = this.usersService.register(registerData);
-    if (newUser) {
-      return 'OK';
-    }
+    return this.usersService.register(registerData);
   }
 
   createRefreshToken(payload) {

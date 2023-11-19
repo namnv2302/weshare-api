@@ -8,6 +8,8 @@ import { User } from '@users/entities/user.entity';
 import { Post } from '@/posts/entities/post.entity';
 import { AuthModule } from '@auth/auth.module';
 import { PostsModule } from '@/posts/posts.module';
+import { ChatsModule } from '@/chats/chats.module';
+import { Chat } from '@/chats/entities/chat.entity';
 
 @Module({
   imports: [
@@ -20,7 +22,7 @@ import { PostsModule } from '@/posts/posts.module';
         username: configService.get<string>('DB_USERNAME'),
         password: null,
         database: configService.get<string>('DB_NAME'),
-        entities: [User, Post],
+        entities: [User, Post, Chat],
         synchronize: true,
       }),
       inject: [ConfigService],
@@ -31,6 +33,7 @@ import { PostsModule } from '@/posts/posts.module';
     UsersModule,
     AuthModule,
     PostsModule,
+    ChatsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
