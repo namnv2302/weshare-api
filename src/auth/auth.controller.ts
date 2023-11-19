@@ -27,19 +27,29 @@ export class AuthController {
     return this.authService.login(req.user, response);
   }
 
-  @Public()
-  @Get('google')
-  @UseGuards(GoogleAuthGuard)
-  googleLogin() {
-    return 'Google Authentication';
-  }
+  // @Public()
+  // @Get('google')
+  // @UseGuards(GoogleAuthGuard)
+  // googleLogin() {
+  //   return 'Google Authentication';
+  // }
 
-  @Public()
-  @Get('google/callback')
-  @UseGuards(GoogleAuthGuard)
-  googleRedirect(@Req() req: Request, @Res() response: Response) {
-    return this.authService.handleGoogleRedirect(req.user, response);
-  }
+  // @Public()
+  // @Get('google/callback')
+  // @UseGuards(GoogleAuthGuard)
+  // googleRedirect(@Res({ passthrough: true }) response: Response) {
+  //   return this.authService.handleGoogleRedirect(response);
+  // }
+
+  // @Public()
+  // @Get('google/success')
+  // @UseGuards(GoogleAuthGuard)
+  // googleSuccess(
+  //   @Req() req: Request,
+  //   @Res({ passthrough: true }) response: Response,
+  // ) {
+  //   return this.authService.handleGoogleSuccess(req.user, response);
+  // }
 
   @Get('me')
   getMe(@User() user: any) {

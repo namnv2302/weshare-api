@@ -7,10 +7,7 @@ import { VerifiedCallback } from 'passport-jwt';
 
 @Injectable()
 export class GoogleStrategy extends PassportStrategy(Strategy) {
-  constructor(
-    private configService: ConfigService,
-    private readonly usersService: UsersService,
-  ) {
+  constructor(private configService: ConfigService) {
     super({
       clientID: configService.get<string>('GCP_CLIENTID'),
       clientSecret: configService.get<string>('GCP_CLIENTSECRET'),
@@ -26,21 +23,13 @@ export class GoogleStrategy extends PassportStrategy(Strategy) {
     done: VerifiedCallback,
   ) {
     const { id, emails, photos, displayName } = profile;
-    const userExisted = await this.usersService.findOneByUsername(
-      emails[0].value,
-    );
-    if (userExisted) {
-      await this.usersService.updateRefreshToken(userExisted.id, refreshToken);
-      done(null, { ...userExisted, accessToken, refreshToken });
-    } else {
-      const user = {
-        email: emails[0].value,
-        name: displayName,
-        avatar: photos[0].value,
-        refreshToken,
-      };
-      const newUser = await this.usersService.createUserFromGoogle(user);
-      done(null, { ...newUser, accessToken, refreshToken });
-    }
+    const user = {
+      id: id,
+      email: emails[0].value,
+      name: displayName,
+      avatar: photos[0].value,
+    };
+    done(null, user);
+    return user;
   }
 }

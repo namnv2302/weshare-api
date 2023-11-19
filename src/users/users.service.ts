@@ -1,4 +1,9 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  HttpException,
+  HttpStatus,
+  Injectable,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Like, Not, Repository } from 'typeorm';
 import slug from 'slug';
@@ -53,7 +58,7 @@ export class UsersService {
       email: registerData.email,
     });
     if (isExist) {
-      throw new BadRequestException('Email already exist!');
+      throw new HttpException('Email already existed!', HttpStatus.BAD_REQUEST);
     }
     try {
       return await this.usersRepository.save({
