@@ -22,6 +22,9 @@ export class Post {
   @Column({ type: 'text', nullable: true })
   postUrl: string;
 
+  @Column({ type: 'text', nullable: true })
+  fileUrl: string;
+
   @ManyToOne(() => User, (user) => user.posts)
   user: IUser;
 

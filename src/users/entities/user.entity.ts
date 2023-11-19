@@ -1,4 +1,5 @@
 import { Post } from '@/posts/entities/post.entity';
+import { Story } from '@/stories/entities/story.entity';
 import {
   Entity,
   Column,
@@ -34,16 +35,25 @@ export class User {
   address: string;
 
   @Column({ nullable: true })
+  bio: string;
+
+  @Column({ nullable: true })
   gender: string;
 
   @Column({ type: 'text', nullable: true })
   avatar: string;
+
+  @Column({ type: 'text', nullable: true })
+  cover: string;
 
   @Column({ type: 'enum', enum: ['admin', 'user'], default: 'user' })
   role: string;
 
   @OneToMany(() => Post, (post) => post.user)
   posts: Post[];
+
+  @OneToMany(() => Story, (story) => story.owner)
+  stories: Story[];
 
   @ManyToMany(() => User)
   @JoinTable()
