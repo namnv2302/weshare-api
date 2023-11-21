@@ -14,6 +14,7 @@ import { ChatsModule } from '@/chats/chats.module';
 import { StoriesModule } from '@/stories/stories.module';
 import { MessagesModule } from '@/messages/messages.module';
 import { Message } from '@/messages/entities/message.entity';
+import { GatewayModule } from '@/gateway/gateway.module';
 
 @Module({
   imports: [
@@ -40,6 +41,7 @@ import { Message } from '@/messages/entities/message.entity';
     ChatsModule,
     StoriesModule,
     MessagesModule,
+    GatewayModule,
   ],
   controllers: [AppController],
   providers: [AppService],
