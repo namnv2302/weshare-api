@@ -35,6 +35,7 @@ export class MessagesService {
     try {
       const messages = await this.messagesRepository.find({
         where: { chatId },
+        order: { createdAt: 'ASC' },
       });
       return messages;
     } catch (error) {

@@ -102,8 +102,17 @@ export class UsersService {
     }
   }
 
-  findOne(id: string) {
-    return `This action returns a #${id} user`;
+  async findOne(id: string) {
+    try {
+      const user = await this.usersRepository.findOne({
+        where: { id: id },
+      });
+      delete user.password;
+      delete user.refreshToken;
+      return user;
+    } catch (error) {
+      throw new BadRequestException('Server failure! Try again');
+    }
   }
 
   findOneUserBySlug(slug: string) {
