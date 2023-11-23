@@ -5,7 +5,6 @@ import ms from 'ms';
 import { JwtService } from '@nestjs/jwt';
 import { UsersService } from '@users/users.service';
 import { RegisterData } from '@users/dto/create-user.dto';
-import { IUser } from '@users/users.interface';
 
 @Injectable()
 export class AuthService {

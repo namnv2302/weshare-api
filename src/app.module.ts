@@ -15,6 +15,8 @@ import { StoriesModule } from '@/stories/stories.module';
 import { MessagesModule } from '@/messages/messages.module';
 import { Message } from '@/messages/entities/message.entity';
 import { GatewayModule } from '@/gateway/gateway.module';
+import { FilesModule } from './files/files.module';
+import { CloudinaryModule } from './cloudinary/cloudinary.module';
 
 @Module({
   imports: [
@@ -42,6 +44,8 @@ import { GatewayModule } from '@/gateway/gateway.module';
     StoriesModule,
     MessagesModule,
     GatewayModule,
+    FilesModule,
+    CloudinaryModule,
   ],
   controllers: [AppController],
   providers: [AppService],
