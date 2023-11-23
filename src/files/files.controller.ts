@@ -38,8 +38,10 @@ export class FilesController {
         .build({ errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY }),
     )
     file: Express.Multer.File,
+    @Body('folderName') folderName: string,
   ) {
-    return this.cloudinaryService.uploadFile(file);
+    if (!folderName) folderName = '';
+    return this.cloudinaryService.uploadFile(file, folderName);
   }
 
   @Get()
