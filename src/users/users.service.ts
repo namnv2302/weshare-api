@@ -43,11 +43,15 @@ export class UsersService {
       throw new BadRequestException('Email already exist!');
     }
     try {
-      return await this.usersRepository.save({
+      const newUser = await this.usersRepository.save({
         ...createUserDto,
         slug: slug(createUserDto.name, '_'),
         password: this.getHashPassword(createUserDto.password),
       });
+      delete newUser.password;
+      delete newUser.refreshToken;
+      delete newUser.role;
+      return newUser;
     } catch (error) {
       throw new BadRequestException('Server failure! Try again');
     }
@@ -61,11 +65,7 @@ export class UsersService {
       throw new HttpException('Email already existed!', HttpStatus.BAD_REQUEST);
     }
     try {
-      return await this.usersRepository.save({
-        ...registerData,
-        slug: slug(registerData.name, '_'),
-        password: this.getHashPassword(registerData.password),
-      });
+      return 'OK';
     } catch (error) {
       throw new BadRequestException('Server failure! Try again');
     }
@@ -109,6 +109,7 @@ export class UsersService {
       });
       delete user.password;
       delete user.refreshToken;
+      delete user.role;
       return user;
     } catch (error) {
       throw new BadRequestException('Server failure! Try again');
@@ -124,11 +125,14 @@ export class UsersService {
   }
 
   findOneByUsername(username: string) {
-    return this.usersRepository.findOneBy({ email: username });
+    return this.usersRepository.findOne({
+      where: { email: username },
+      select: ['id', 'password', 'email'],
+    });
   }
 
-  getUserInfoById(id: string) {
-    return this.usersRepository.findOne({
+  async getUserInfoById(id: string) {
+    const user = await this.usersRepository.findOne({
       where: { id: id },
       order: { posts: { createdAt: 'DESC' } },
       relations: [
@@ -139,6 +143,10 @@ export class UsersService {
         'friends',
       ],
     });
+    delete user.password;
+    delete user.refreshToken;
+    delete user.role;
+    return user;
   }
 
   async findUserByRefreshToken(refreshToken: string) {
