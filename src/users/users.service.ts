@@ -5,7 +5,7 @@ import {
   Injectable,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Like, Not, Repository } from 'typeorm';
+import { In, Like, Not, Repository } from 'typeorm';
 import slug from 'slug';
 import { compareSync, genSaltSync, hashSync } from 'bcryptjs';
 import {
@@ -65,6 +65,14 @@ export class UsersService {
       throw new HttpException('Email already existed!', HttpStatus.BAD_REQUEST);
     }
     try {
+      const newUser = await this.usersRepository.save({
+        ...registerData,
+        slug: slug(registerData.name, '_'),
+        password: this.getHashPassword(registerData.password),
+      });
+      delete newUser.password;
+      delete newUser.refreshToken;
+      delete newUser.role;
       return 'OK';
     } catch (error) {
       throw new BadRequestException('Server failure! Try again');
@@ -116,11 +124,17 @@ export class UsersService {
     const defaultLimit = +limit ? +limit : 10;
     const totalItems = (await this.usersRepository.find(filter)).length;
     const totalPages = Math.ceil(totalItems / defaultLimit);
+    const friendsList = await this.usersRepository.findOne({
+      where: { id: user.id },
+      relations: ['friends'],
+    });
+    const friendsListId = friendsList.friends.map((user) => user.id);
+    friendsListId.push(user.id);
     try {
       if (filter.name) {
         const users = await this.usersRepository.find({
           where: {
-            id: Not(user.id),
+            id: Not(In(friendsListId)),
             name: Like(`%${filter.name}%`),
           },
           skip: offset,
@@ -138,7 +152,7 @@ export class UsersService {
       } else {
         const users = await this.usersRepository.find({
           where: {
-            id: Not(user.id),
+            id: Not(In(friendsListId)),
           },
           skip: offset,
           take: defaultLimit,
@@ -154,6 +168,7 @@ export class UsersService {
         };
       }
     } catch (error) {
+      console.log(error);
       throw new BadRequestException('Server failure! Try again');
     }
   }
@@ -351,7 +366,7 @@ export class UsersService {
     }
   }
 
-  async getFriend(id: string) {
+  async getFriends(id: string) {
     try {
       return await this.usersRepository.findOne({
         where: { id },

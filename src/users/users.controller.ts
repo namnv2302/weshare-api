@@ -48,9 +48,9 @@ export class UsersController {
     return this.usersService.getFollowed(id);
   }
 
-  @Get(':id/friend')
-  getFriend(@Param('id') id: string) {
-    return this.usersService.getFriend(id);
+  @Get(':id/friends')
+  getFriends(@Param('id') id: string) {
+    return this.usersService.getFriends(id);
   }
 
   @Get(':id')
