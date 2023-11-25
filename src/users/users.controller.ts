@@ -28,9 +28,29 @@ export class UsersController {
     return this.usersService.findAll(queryString, user);
   }
 
-  @Get('followed')
-  getFollowed(@User() user: IUser) {
-    return this.usersService.getFollowed(user);
+  @Get('suggests')
+  getUserSuggests(
+    @Query('current') currentPage: string,
+    @Query('pageSize') limit: string,
+    @Query() queryString: string,
+    @User() user: IUser,
+  ) {
+    return this.usersService.getUserSuggests(
+      +currentPage,
+      +limit,
+      queryString,
+      user,
+    );
+  }
+
+  @Get(':id/followed')
+  getFollowed(@Param('id') id: string) {
+    return this.usersService.getFollowed(id);
+  }
+
+  @Get(':id/friend')
+  getFriend(@Param('id') id: string) {
+    return this.usersService.getFriend(id);
   }
 
   @Get(':id')

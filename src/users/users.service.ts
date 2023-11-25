@@ -102,12 +102,67 @@ export class UsersService {
     }
   }
 
+  async getUserSuggests(
+    currentPage: number,
+    limit: number,
+    queryString: string,
+    user: IUser,
+  ) {
+    const { filter } = aqp(queryString);
+    delete filter.current;
+    delete filter.pageSize;
+
+    const offset = (+currentPage - 1) * +limit;
+    const defaultLimit = +limit ? +limit : 10;
+    const totalItems = (await this.usersRepository.find(filter)).length;
+    const totalPages = Math.ceil(totalItems / defaultLimit);
+    try {
+      if (filter.name) {
+        const users = await this.usersRepository.find({
+          where: {
+            id: Not(user.id),
+            name: Like(`%${filter.name}%`),
+          },
+          skip: offset,
+          take: defaultLimit,
+        });
+        return {
+          users,
+          meta: {
+            current: currentPage,
+            pageSize: defaultLimit,
+            pages: totalPages,
+            total: totalItems,
+          },
+        };
+      } else {
+        const users = await this.usersRepository.find({
+          where: {
+            id: Not(user.id),
+          },
+          skip: offset,
+          take: defaultLimit,
+        });
+        return {
+          users,
+          meta: {
+            current: currentPage,
+            pageSize: defaultLimit,
+            pages: totalPages,
+            total: totalItems,
+          },
+        };
+      }
+    } catch (error) {
+      throw new BadRequestException('Server failure! Try again');
+    }
+  }
+
   async findOne(id: string) {
     try {
       const user = await this.usersRepository.findOne({
         where: { id: id },
       });
-      delete user.password;
       delete user.refreshToken;
       delete user.role;
       return user;
@@ -143,7 +198,6 @@ export class UsersService {
         'friends',
       ],
     });
-    delete user.password;
     delete user.refreshToken;
     delete user.role;
     return user;
@@ -285,11 +339,24 @@ export class UsersService {
     }
   }
 
-  async getFollowed(user: IUser) {
+  async getFollowed(id: string) {
     try {
       return await this.usersRepository.findOne({
-        where: { id: user.id },
+        where: { id },
+        select: ['id'],
         relations: ['followed'],
+      });
+    } catch (error) {
+      throw new BadRequestException('Server failure! Try again');
+    }
+  }
+
+  async getFriend(id: string) {
+    try {
+      return await this.usersRepository.findOne({
+        where: { id },
+        select: ['id'],
+        relations: ['friends'],
       });
     } catch (error) {
       throw new BadRequestException('Server failure! Try again');
