@@ -4,18 +4,23 @@ import { UpdateMessageDto } from '@/messages/dto/update-message.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Message } from '@/messages/entities/message.entity';
 import { Repository } from 'typeorm';
+import { ChatsService } from '@/chats/chats.service';
 
 @Injectable()
 export class MessagesService {
   constructor(
     @InjectRepository(Message)
     private messagesRepository: Repository<Message>,
+    private chatsService: ChatsService,
   ) {}
 
   async create(createMessageDto: CreateMessageDto) {
     try {
       const message = await this.messagesRepository.save({
         ...createMessageDto,
+      });
+      await this.chatsService.update(message.chatId, {
+        sendLastAt: new Date(),
       });
       return message;
     } catch (error) {

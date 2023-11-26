@@ -52,6 +52,7 @@ export class ChatsService {
             secondId: userId,
           },
         ],
+        order: { sendLastAt: 'DESC' },
       });
       return chats;
     } catch (error) {
@@ -73,8 +74,15 @@ export class ChatsService {
     }
   }
 
-  update(id: number, updateChatDto: UpdateChatDto) {
-    return `This action updates a #${id} chat`;
+  async update(id: string, updateChatDto: UpdateChatDto) {
+    try {
+      const chat = await this.chatsRepository.findOneBy({ id: id });
+      if (chat) {
+        return await this.chatsRepository.save({ ...chat, ...updateChatDto });
+      }
+    } catch (error) {
+      throw new BadRequestException('Server failure! Try again');
+    }
   }
 
   remove(id: number) {

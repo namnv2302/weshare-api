@@ -21,6 +21,9 @@ export class Chat {
   isDeleted: boolean;
 
   @Column({ type: Date, nullable: true })
+  sendLastAt: Date;
+
+  @Column({ type: Date, nullable: true })
   deletedAt: Date;
 
   @CreateDateColumn({ nullable: true })
