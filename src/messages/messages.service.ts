@@ -1,4 +1,9 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  HttpException,
+  HttpStatus,
+  Injectable,
+} from '@nestjs/common';
 import { CreateMessageDto } from '@/messages/dto/create-message.dto';
 import { UpdateMessageDto } from '@/messages/dto/update-message.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -48,8 +53,22 @@ export class MessagesService {
     }
   }
 
-  update(id: number, updateMessageDto: UpdateMessageDto) {
-    return `This action updates a #${id} message`;
+  async update(id: string, updateMessageDto: UpdateMessageDto) {
+    try {
+      const message = await this.messagesRepository.findOneBy({ id });
+
+      if (message) {
+        const updateMess = await this.messagesRepository.save({
+          ...message,
+          ...updateMessageDto,
+        });
+        return updateMess;
+      } else {
+        throw new HttpException('Not found message', HttpStatus.BAD_REQUEST);
+      }
+    } catch (error) {
+      throw new BadRequestException('Server failure! Try again');
+    }
   }
 
   remove(id: number) {

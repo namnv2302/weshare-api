@@ -44,6 +44,7 @@ export class Gateway implements OnModuleInit, OnGatewayDisconnect {
     );
     if (user) {
       this.server.to(user.socketId).emit('getMessage', message);
+      this.server.to(user.socketId).emit('getNotificationNewMessage', message);
     }
   }
 }

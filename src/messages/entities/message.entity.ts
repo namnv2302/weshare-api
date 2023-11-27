@@ -20,6 +20,9 @@ export class Message {
   @Column({ type: 'text', nullable: true })
   text: string;
 
+  @Column({ default: true })
+  isRead: boolean;
+
   @CreateDateColumn({ nullable: true })
   createdAt: Date;
 

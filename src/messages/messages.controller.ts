@@ -37,7 +37,7 @@ export class MessagesController {
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateMessageDto: UpdateMessageDto) {
-    return this.messagesService.update(+id, updateMessageDto);
+    return this.messagesService.update(id, updateMessageDto);
   }
 
   @Delete(':id')
