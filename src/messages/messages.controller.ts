@@ -25,6 +25,11 @@ export class MessagesController {
     return this.messagesService.findAll();
   }
 
+  @Get('unread')
+  getMessagesUnread() {
+    return this.messagesService.getMessagesUnread();
+  }
+
   @Get(':chatId')
   getMessagesByChatId(@Param('chatId') chatId: string) {
     return this.messagesService.getMessagesByChatId(chatId);

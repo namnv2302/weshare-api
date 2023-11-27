@@ -37,6 +37,18 @@ export class MessagesService {
     return `This action returns all messages`;
   }
 
+  async getMessagesUnread() {
+    try {
+      const messages = await this.messagesRepository.find({
+        where: { isRead: false },
+        order: { createdAt: 'DESC' },
+      });
+      return messages;
+    } catch (error) {
+      throw new BadRequestException('Server failure! Try again');
+    }
+  }
+
   findOne(id: number) {
     return `This action returns a #${id} message`;
   }
