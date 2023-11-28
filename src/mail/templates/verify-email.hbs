@@ -1,0 +1,29 @@
+<html lang='en'>
+  <head>
+    <meta charset='UTF-8' />
+    <meta name='viewport' content='width=device-width, initial-scale=1.0' />
+    <title>Document</title>
+  </head>
+  <body>
+    <mj-section background-color='#fafafa'>
+      <mj-column>
+        <mj-text color='#525252'>
+          Hi
+          {{recipient}}
+          .Thank you for creating an account. Click the button below to verify
+          this email address and complete the registration process:
+        </mj-text>
+
+        <mj-button
+          font-family='Helvetica'
+          background-color='#f45e43'
+          color='white'
+        >
+          <a href='{{verifyLink}}'>
+            Verify now!
+          </a>
+        </mj-button>
+      </mj-column>
+    </mj-section>
+  </body>
+</html>

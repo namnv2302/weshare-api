@@ -15,8 +15,9 @@ import { StoriesModule } from '@/stories/stories.module';
 import { MessagesModule } from '@/messages/messages.module';
 import { Message } from '@/messages/entities/message.entity';
 import { GatewayModule } from '@/gateway/gateway.module';
-import { FilesModule } from './files/files.module';
-import { CloudinaryModule } from './cloudinary/cloudinary.module';
+import { FilesModule } from '@/files/files.module';
+import { CloudinaryModule } from '@/cloudinary/cloudinary.module';
+import { MailModule } from '@/mail/mail.module';
 
 @Module({
   imports: [
@@ -46,6 +47,7 @@ import { CloudinaryModule } from './cloudinary/cloudinary.module';
     GatewayModule,
     FilesModule,
     CloudinaryModule,
+    MailModule,
   ],
   controllers: [AppController],
   providers: [AppService],

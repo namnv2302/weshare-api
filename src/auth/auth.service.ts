@@ -1,4 +1,9 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  HttpException,
+  HttpStatus,
+  Injectable,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Response } from 'express';
 import ms from 'ms';
@@ -110,6 +115,25 @@ export class AuthService {
       }
     } catch (error) {
       throw new BadRequestException('Refresh token invalid. Login again!');
+    }
+  }
+
+  async verifyEmail(token: string) {
+    try {
+      const decode = this.jwtService.verify(token, {
+        secret: this.configService.get<string>('VERIFY_EMAIL_SECRET'),
+      });
+      const user = await this.usersService.findOneByUsername(decode.email);
+      if (user) {
+        if (user.isVerify) {
+          throw new HttpException('Email verified!!', HttpStatus.BAD_REQUEST);
+        }
+        return await this.usersService.update(user.id, { isVerify: true });
+      } else {
+        throw new BadRequestException('Token invalid.');
+      }
+    } catch (error) {
+      throw new BadRequestException('Server failure.');
     }
   }
 

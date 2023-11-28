@@ -91,6 +91,9 @@ export class User {
   @Column({ default: true })
   isActive: boolean;
 
+  @Column({ default: false })
+  isVerify: boolean;
+
   @Column({ type: 'text', nullable: true })
   refreshToken: string;
 

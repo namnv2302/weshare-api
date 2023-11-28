@@ -17,12 +17,14 @@ import { UpdateUserDto } from '@users/dto/update-user.dto';
 import { User } from '@users/entities/user.entity';
 import { IUser } from '@users/users.interface';
 import aqp from 'api-query-params';
+import { MailService } from '@/mail/mail.service';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectRepository(User)
     private usersRepository: Repository<User>,
+    private mailService: MailService,
   ) {}
 
   getHashPassword(password: string) {
@@ -70,6 +72,11 @@ export class UsersService {
         slug: slug(registerData.name, '_'),
         password: this.getHashPassword(registerData.password),
       });
+      await this.mailService.sendVerifyEmailLink(
+        newUser.id,
+        newUser.email,
+        newUser.name,
+      );
       delete newUser.password;
       delete newUser.refreshToken;
       delete newUser.role;

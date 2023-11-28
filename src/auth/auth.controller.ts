@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Get,
+  Param,
   Post,
   Req,
   Res,
@@ -13,7 +14,7 @@ import { Public, ResponseMessage } from '@/decorator/customize';
 import { User } from '@/decorator/user.decorator';
 import { Request, Response } from 'express';
 import { RegisterData } from '@users/dto/create-user.dto';
-import { GoogleAuthGuard } from '@auth/guards/google-auth.guard';
+// import { GoogleAuthGuard } from '@auth/guards/google-auth.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -71,6 +72,11 @@ export class AuthController {
   ) {
     const refreshToken = request.cookies['refresh_token'];
     return this.authService.refreshToken(refreshToken, response);
+  }
+
+  @Get('verify-email')
+  verifyEmail(@Param('token') token: string) {
+    return this.authService.verifyEmail(token);
   }
 
   @Get('logout')
