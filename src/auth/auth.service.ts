@@ -128,7 +128,8 @@ export class AuthService {
         if (user.isVerify) {
           throw new HttpException('Email verified!!', HttpStatus.BAD_REQUEST);
         }
-        return await this.usersService.update(user.id, { isVerify: true });
+        await this.usersService.update(user.id, { isVerify: true });
+        return 'OK';
       } else {
         throw new BadRequestException('Token invalid.');
       }

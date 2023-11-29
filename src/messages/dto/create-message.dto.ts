@@ -8,5 +8,8 @@ export class CreateMessageDto {
   senderId: string;
 
   @IsNotEmpty()
+  recipientId: string;
+
+  @IsNotEmpty()
   text: string;
 }

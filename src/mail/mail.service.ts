@@ -23,7 +23,7 @@ export class MailService {
 
       await this.mailerService.sendMail({
         to: email,
-        from: 'Weshare <>',
+        from: 'WeShare <ads.weshare@gmail.com>',
         subject: 'Verify your email!!',
         template: 'verify-email',
         context: {

@@ -2,8 +2,8 @@ import {
   Body,
   Controller,
   Get,
-  Param,
   Post,
+  Query,
   Req,
   Res,
   UseGuards,
@@ -74,8 +74,9 @@ export class AuthController {
     return this.authService.refreshToken(refreshToken, response);
   }
 
+  @Public()
   @Get('verify-email')
-  verifyEmail(@Param('token') token: string) {
+  verifyEmail(@Query('token') token: string) {
     return this.authService.verifyEmail(token);
   }
 

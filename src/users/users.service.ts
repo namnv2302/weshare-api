@@ -42,7 +42,7 @@ export class UsersService {
       email: createUserDto.email,
     });
     if (isExist) {
-      throw new BadRequestException('Email already exist!');
+      throw new HttpException('Email already exist!', HttpStatus.NOT_FOUND);
     }
     try {
       const newUser = await this.usersRepository.save({
@@ -64,7 +64,7 @@ export class UsersService {
       email: registerData.email,
     });
     if (isExist) {
-      throw new HttpException('Email already existed!', HttpStatus.BAD_REQUEST);
+      throw new BadRequestException('Email already existed!');
     }
     try {
       const newUser = await this.usersRepository.save({

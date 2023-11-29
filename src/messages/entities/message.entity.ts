@@ -17,6 +17,9 @@ export class Message {
   @Column({ nullable: true })
   senderId: string;
 
+  @Column({ nullable: true })
+  recipientId: string;
+
   @Column({ type: 'text', nullable: true })
   text: string;
 
